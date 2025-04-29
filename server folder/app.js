@@ -11,9 +11,14 @@ app.use(express.urlencoded({ extended: true }));
 
 app.get("/characters", async (req, res) => {
   try {
+    const { page, limit } = req.query;
     const response = await axios.get(
-      "https://dragonball-api.com/api/characters"
-    );
+      "https://dragonball-api.com/api/characters", {
+        params: {
+          page,
+          limit,
+        },
+      });
     const characters = response.data;
 
     res.json(characters);
@@ -43,7 +48,13 @@ app.get("/characters/:id", async (req, res) => {
 
 app.get("/planets", async (req, res) => {
   try {
-    const response = await axios.get("https://dragonball-api.com/api/planets");
+    const { page, limit } = req.query
+    const response = await axios.get("https://dragonball-api.com/api/planets", {
+      params: {
+        page,
+        limit,
+      },
+    });
     const characters = response.data;
 
     res.json(characters);
