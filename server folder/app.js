@@ -7,7 +7,7 @@ const axios = require("axios");
 const { User } = require("./models");
 const { signToken } = require("./helpers/jwt");
 const errorHandler = require("./middlewares/errorHandler");
-const { comparePassword } = require("./helpers/bcrypt");
+const { comparePassword, hashPassword } = require("./helpers/bcrypt");
 const { isAdmin } = require("./middlewares/authorization");
 const authentication = require("./middlewares/authentication");
 // const cors = require('cors');
@@ -56,7 +56,7 @@ app.post("/login", async (req, res, next) => {
   }
 });
 
-app.post("/addStaff", authentication, isAdmin, async (req, res, next) => {
+app.post("/register", async (req, res, next) => {
   try {
     const {email, password, username} = req.body
     const user = await User.create({
@@ -75,7 +75,7 @@ app.post("/addStaff", authentication, isAdmin, async (req, res, next) => {
 
 
 // 3rd party API database endpoints
-app.get("/characters", async (req, res) => {
+app.get("/characters", authentication, async (req, res) => {
   try {
     const { page, limit } = req.query;
     const response = await axios.get(
@@ -96,7 +96,7 @@ app.get("/characters", async (req, res) => {
   }
 });
 
-app.get("/characters/:id", async (req, res) => {
+app.get("/characters/:id", authentication, async (req, res) => {
   const { id } = req.params; // ambil id dari URL
   try {
     const response = await axios.get(
@@ -114,7 +114,7 @@ app.get("/characters/:id", async (req, res) => {
   }
 });
 
-app.get("/planets", async (req, res) => {
+app.get("/planets", authentication, async (req, res) => {
   try {
     const { page, limit } = req.query;
     const response = await axios.get("https://dragonball-api.com/api/planets", {
@@ -132,7 +132,7 @@ app.get("/planets", async (req, res) => {
   }
 });
 
-app.get("/planets/:id", async (req, res) => {
+app.get("/planets/:id", authentication, async (req, res) => {
   const { id } = req.params; // ambil id dari URL
   try {
     const response = await axios.get(
@@ -150,7 +150,7 @@ app.get("/planets/:id", async (req, res) => {
   }
 });
 
-app.get("/transformations", async (req, res) => {
+app.get("/transformations", authentication, async (req, res) => {
   try {
     const response = await axios.get(
       "https://dragonball-api.com/api/transformations"
@@ -164,7 +164,7 @@ app.get("/transformations", async (req, res) => {
   }
 });
 
-app.get("/transformations/:id", async (req, res) => {
+app.get("/transformations/:id", authentication, async (req, res) => {
   const { id } = req.params; // ambil id dari URL
   try {
     const response = await axios.get(
@@ -179,6 +179,52 @@ app.get("/transformations/:id", async (req, res) => {
       error.message
     );
     res.status(500).json({ error: "Failed to fetch character" });
+  }
+});
+
+app.delete("/users/:id", authentication, isAdmin, async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    const user = await User.findByPk(id);
+
+    if (!user) {
+      throw { name: "NotFound", message: "User not found" };
+    }
+
+    await user.destroy();
+
+    res.status(200).json({ message: "User deleted successfully" });
+  } catch (err) {
+    next(err);
+  }
+});
+
+app.patch("/users/edit", authentication, async (req, res, next) => {
+  try {
+    const { email, username, password } = req.body;
+
+    const user = await User.findByPk(req.user.id);
+
+    if (!user) {
+      throw { name: "NotFound", message: "User not found" };
+    }
+
+    if (email) user.email = email;
+    if (username) user.username = username;
+    if (password) user.password = hashPassword(password); // rehash password
+
+    await user.save();
+
+    const result = user.toJSON();
+    delete result.password;
+
+    res.status(200).json({
+      message: "User updated successfully",
+      user: result
+    });
+  } catch (err) {
+    next(err);
   }
 });
 
