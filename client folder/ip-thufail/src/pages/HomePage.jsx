@@ -1,14 +1,6 @@
-import { useEffect, useState } from "react";
-import { api } from "../components/UrlApi";
-import { Link, NavLink, useNavigate } from "react-router";
 import Menu from "../components/Menu";
 
 export default function HomePage() {
-  const access_token = localStorage.getItem("access_token");
-  const [characters, setCharacters] = useState([]);
-  const [planets, setPlanets] = useState([]);
-  const [transformations, setTransformations] = useState([]);
-
   return (
     <div
       className="min-h-screen flex flex-col px-0 py-12 bg-[url('background.jpg')] bg-no-repeat bg-cover bg-center 
