@@ -59,6 +59,16 @@ app.post("/login", async (req, res, next) => {
 app.post("/register", async (req, res, next) => {
   try {
     const {email, password, username} = req.body
+
+    if (!email) {
+      throw { name: "BadRequest", message: "Email is required" };
+    }
+    if (!password) {
+      throw { name: "BadRequest", message: "Password is required" };
+    }
+    if (!username) {
+      throw { name: "BadRequest", message: "Username is required" };
+    }
     const user = await User.create({
         email: email,
         password: password,
@@ -72,115 +82,6 @@ app.post("/register", async (req, res, next) => {
     next(err)
 }
 })
-
-
-// 3rd party API database endpoints
-app.get("/characters", authentication, async (req, res) => {
-  try {
-    const { page, limit } = req.query;
-    const response = await axios.get(
-      "https://dragonball-api.com/api/characters",
-      {
-        params: {
-          page,
-          limit,
-        },
-      }
-    );
-    const characters = response.data;
-
-    res.json(characters);
-  } catch (error) {
-    console.error("Error fetching Dragon Ball characters:", error.message);
-    res.status(500).json({ error: "Failed to fetch characters" });
-  }
-});
-
-app.get("/characters/:id", authentication, async (req, res) => {
-  const { id } = req.params; // ambil id dari URL
-  try {
-    const response = await axios.get(
-      `https://dragonball-api.com/api/characters/${id}`
-    );
-    const character = response.data;
-
-    res.json(character);
-  } catch (error) {
-    console.error(
-      `Error fetching Dragon Ball character with id ${id}:`,
-      error.message
-    );
-    res.status(500).json({ error: "Failed to fetch character" });
-  }
-});
-
-app.get("/planets", authentication, async (req, res) => {
-  try {
-    const { page, limit } = req.query;
-    const response = await axios.get("https://dragonball-api.com/api/planets", {
-      params: {
-        page,
-        limit,
-      },
-    });
-    const characters = response.data;
-
-    res.json(characters);
-  } catch (error) {
-    console.error("Error fetching Dragon Ball characters:", error.message);
-    res.status(500).json({ error: "Failed to fetch characters" });
-  }
-});
-
-app.get("/planets/:id", authentication, async (req, res) => {
-  const { id } = req.params; // ambil id dari URL
-  try {
-    const response = await axios.get(
-      `https://dragonball-api.com/api/planets/${id}`
-    );
-    const character = response.data;
-
-    res.json(character);
-  } catch (error) {
-    console.error(
-      `Error fetching Dragon Ball character with id ${id}:`,
-      error.message
-    );
-    res.status(500).json({ error: "Failed to fetch character" });
-  }
-});
-
-app.get("/transformations", authentication, async (req, res) => {
-  try {
-    const response = await axios.get(
-      "https://dragonball-api.com/api/transformations"
-    );
-    const characters = response.data;
-
-    res.json(characters);
-  } catch (error) {
-    console.error("Error fetching Dragon Ball characters:", error.message);
-    res.status(500).json({ error: "Failed to fetch characters" });
-  }
-});
-
-app.get("/transformations/:id", authentication, async (req, res) => {
-  const { id } = req.params; // ambil id dari URL
-  try {
-    const response = await axios.get(
-      `https://dragonball-api.com/api/transformations/${id}`
-    );
-    const character = response.data;
-
-    res.json(character);
-  } catch (error) {
-    console.error(
-      `Error fetching Dragon Ball character with id ${id}:`,
-      error.message
-    );
-    res.status(500).json({ error: "Failed to fetch character" });
-  }
-});
 
 app.delete("/users/:id", authentication, isAdmin, async (req, res, next) => {
   try {
@@ -225,6 +126,115 @@ app.patch("/users/edit", authentication, async (req, res, next) => {
     });
   } catch (err) {
     next(err);
+  }
+});
+
+
+// 3rd party API database endpoints
+app.get("/characters", authentication, async (req, res) => {
+  try {
+    const { page, limit } = req.query;
+    const response = await axios.get(
+      "https://dragonball-api.com/api/characters",
+      {
+        params: {
+          page,
+          limit,
+        },
+      }
+    );
+    const characters = response.data;
+
+    res.json(characters);
+  } catch (error) {
+    console.error("Error fetching Dragon Ball characters:", error.message);
+    res.status(500).json({ error: "Failed to fetch characters" });
+  }
+});
+
+app.get("/characters/:id", authentication, async (req, res) => {
+  const { id } = req.params; // ambil id dari URL
+  try {
+    const response = await axios.get(
+      `https://dragonball-api.com/api/characters/${id}`
+    );
+    const character = response.data;
+
+    res.json(character);
+  } catch (error) {
+    console.error(
+      `Error fetching Dragon Ball character with id ${id}:`,
+      error.message
+    );
+    res.status(500).json({ error: `Failed to fetch character` });
+  }
+});
+
+app.get("/planets", authentication, async (req, res) => {
+  try {
+    const { page, limit } = req.query;
+    const response = await axios.get("https://dragonball-api.com/api/planets", {
+      params: {
+        page,
+        limit,
+      },
+    });
+    const characters = response.data;
+
+    res.json(characters);
+  } catch (error) {
+    console.error("Error fetching Dragon Ball characters:", error.message);
+    res.status(500).json({ error: "Failed to fetch planets" });
+  }
+});
+
+app.get("/planets/:id", authentication, async (req, res) => {
+  const { id } = req.params; // ambil id dari URL
+  try {
+    const response = await axios.get(
+      `https://dragonball-api.com/api/planets/${id}`
+    );
+    const character = response.data;
+
+    res.json(character);
+  } catch (error) {
+    console.error(
+      `Error fetching Dragon Ball character with id ${id}:`,
+      error.message
+    );
+    res.status(500).json({ error: "Failed to fetch planets" });
+  }
+});
+
+app.get("/transformations", authentication, async (req, res) => {
+  try {
+    const response = await axios.get(
+      "https://dragonball-api.com/api/transformations"
+    );
+    const characters = response.data;
+
+    res.json(characters);
+  } catch (error) {
+    console.error("Error fetching Dragon Ball characters:", error.message);
+    res.status(500).json({ error: "Failed to fetch transformations" });
+  }
+});
+
+app.get("/transformations/:id", authentication, async (req, res) => {
+  const { id } = req.params; // ambil id dari URL
+  try {
+    const response = await axios.get(
+      `https://dragonball-api.com/api/transformations/${id}`
+    );
+    const character = response.data;
+
+    res.json(character);
+  } catch (error) {
+    console.error(
+      `Error fetching Dragon Ball character with id ${id}:`,
+      error.message
+    );
+    res.status(500).json({ error: "Failed to fetch transformations" });
   }
 });
 
