@@ -16,17 +16,22 @@ jest.mock("../middlewares/authorization", () => ({
   }),
 }));
 
+jest.mock("../helpers/bcrypt", () => ({
+    hashPassword: jest.fn((password) => `hashed_${password}`),
+    comparePassword: jest.fn(), // <== ini mock function
+  }));
+
 const request = require("supertest");
 const app = require("../app");
 const { User } = require("../models");
-const { comparePassword } = require("../helpers/bcrypt");
+const { comparePassword, hashPassword } = require("../helpers/bcrypt");
 const axios = require("axios");
 
 jest.mock("../helpers/jwt", () => ({
   signToken: jest.fn(() => "mockedAccessToken"),
 }));
 jest.mock("../models");
-jest.mock("../helpers/bcrypt");
+
 jest.mock("axios");
 
 describe("POST /login", () => {
@@ -643,3 +648,5 @@ describe("GET /transformations/:id", () => {
     expect(response.body).toHaveProperty("message", "Invalid Token");
   });
 });
+
+

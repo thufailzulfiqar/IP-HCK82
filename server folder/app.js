@@ -10,7 +10,8 @@ const errorHandler = require("./middlewares/errorHandler");
 const { comparePassword, hashPassword } = require("./helpers/bcrypt");
 const { isAdmin } = require("./middlewares/authorization");
 const authentication = require("./middlewares/authentication");
-// const cors = require('cors');
+const cors = require('cors');
+app.use(cors())
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -131,7 +132,7 @@ app.patch("/users/edit", authentication, async (req, res, next) => {
 
 
 // 3rd party API database endpoints
-app.get("/characters", authentication, async (req, res) => {
+app.get("/characters", async (req, res) => {
   try {
     const { page, limit } = req.query;
     const response = await axios.get(
@@ -152,7 +153,7 @@ app.get("/characters", authentication, async (req, res) => {
   }
 });
 
-app.get("/characters/:id", authentication, async (req, res) => {
+app.get("/characters/:id", async (req, res) => {
   const { id } = req.params; // ambil id dari URL
   try {
     const response = await axios.get(
@@ -170,7 +171,7 @@ app.get("/characters/:id", authentication, async (req, res) => {
   }
 });
 
-app.get("/planets", authentication, async (req, res) => {
+app.get("/planets", async (req, res) => {
   try {
     const { page, limit } = req.query;
     const response = await axios.get("https://dragonball-api.com/api/planets", {
@@ -188,7 +189,7 @@ app.get("/planets", authentication, async (req, res) => {
   }
 });
 
-app.get("/planets/:id", authentication, async (req, res) => {
+app.get("/planets/:id", async (req, res) => {
   const { id } = req.params; // ambil id dari URL
   try {
     const response = await axios.get(
@@ -206,7 +207,7 @@ app.get("/planets/:id", authentication, async (req, res) => {
   }
 });
 
-app.get("/transformations", authentication, async (req, res) => {
+app.get("/transformations", async (req, res) => {
   try {
     const response = await axios.get(
       "https://dragonball-api.com/api/transformations"
@@ -220,7 +221,7 @@ app.get("/transformations", authentication, async (req, res) => {
   }
 });
 
-app.get("/transformations/:id", authentication, async (req, res) => {
+app.get("/transformations/:id", async (req, res) => {
   const { id } = req.params; // ambil id dari URL
   try {
     const response = await axios.get(
