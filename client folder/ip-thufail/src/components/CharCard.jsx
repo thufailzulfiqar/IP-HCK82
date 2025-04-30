@@ -1,6 +1,7 @@
 import { Link, useNavigate } from "react-router";
 import { api } from "../components/UrlApi";
 import Swal from "sweetalert2";
+import { motion } from "framer-motion";
 
 export default function CharacterCard({ character }) {
   const access_token = localStorage.getItem("access_token");
@@ -9,6 +10,18 @@ export default function CharacterCard({ character }) {
     character;
     
   return (
+    <motion.div
+      initial={{ opacity: 0, y: 300 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{
+        type: "spring",
+        stiffness: 300,
+        damping: 20,
+        mass: 0.5,
+        delay: 0.1,
+      }}
+      
+    >
     <div className="relative bg-[#1E1E24] rounded-lg shadow-lg text-white w-64 pt-20 h-[550px] m-4 overflow-visible group">
 
       <div className="absolute top-30 left-1/2 -translate-x-1/2 -translate-y-1/2 w-52 h-80 z-10 transition-transform duration-1000 ease-in-out group-hover:scale-125">
@@ -57,5 +70,8 @@ export default function CharacterCard({ character }) {
         
       </div>
     </div>
+      {/* Card content */}
+    </motion.div>
+    
   );
 }
