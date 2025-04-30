@@ -13,6 +13,7 @@ import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import AuthLayout from "./layouts/AuthLayouts";
 import HomePage from "./pages/HomePage";
+import CharacterPage from "./pages/CharacterPage";
 
 function App() {
   return (
@@ -22,7 +23,7 @@ function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/" element={<AuthLayout />}>
           <Route index element={<HomePage />} />
-          {/* <Route path="/my-coins" element={<MyCoinPage />} /> */}
+          <Route path="/characters" element={<CharacterPage />} />
           {/* <Route path="/update-my-coin/:id" element={<UpdateMyCoin />} /> */}
         </Route>
       </Routes>
