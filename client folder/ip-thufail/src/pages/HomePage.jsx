@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { api } from "../components/UrlApi";
-import Sidebar from "../components/Sidebar";
 
 export default function HomePage() {
   const access_token = localStorage.getItem("access_token");
@@ -9,8 +8,8 @@ export default function HomePage() {
   const [transformations, setTransformations] = useState([]);
 
   return (
-    <div className="flex">
-      <Sidebar />
+    <div className="min-h-screen flex flex-col px-6 py-12 bg-[url('background.jpg')] bg-cover bg-center bg-no-repeat">
+        
     </div>
   );
 }
