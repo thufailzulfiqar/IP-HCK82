@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { addFavorite, removeFavorite } from "../store/slices/FavoriteSlices";
 import { api } from "../components/UrlApi";
 import CharCard from "../components/CharCard";
 import Menu from "../components/Menu";
@@ -10,34 +12,31 @@ export default function CharacterPage() {
   const [hasMore, setHasMore] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [initialLoadDone, setInitialLoadDone] = useState(false);
-  const [favorite, setFavorite] = useState(
-    JSON.parse(localStorage.getItem("favorites")) || []
-  );
+
+  const favorites = useSelector((state) => state.favorites.items);
+  const dispatch = useDispatch();
 
   const toggleFavorite = (character) => {
-    const exists = favorite.find((fav) => fav.id === character.id);
-    const updated = exists
-      ? favorite.filter((fav) => fav.id !== character.id)
-      : [...favorite, character];
-
-    setFavorite(updated);
-    localStorage.setItem("favorites", JSON.stringify(updated));
+    const exists = favorites.find((fav) => fav.id === character.id);
+    if (exists) {
+      dispatch(removeFavorite(character));
+    } else {
+      dispatch(addFavorite(character));
+    }
   };
 
   useEffect(() => {
-    // Hanya fetch saat pertama kali mount (page 1)
     if (page === 1) {
       fetchCharacters(page, true);
     } else {
       fetchCharacters(page);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page]);
 
   useEffect(() => {
     function handleScroll() {
       if (
-        window.innerHeight + window.scrollY >= document.body.offsetHeight - 0 &&
+        window.innerHeight + window.scrollY >= document.body.offsetHeight &&
         !isLoading &&
         hasMore &&
         initialLoadDone
@@ -68,16 +67,11 @@ export default function CharacterPage() {
 
       const meta = response.data.meta;
       setHasMore(meta.currentPage < meta.totalPages);
-      if (isInitial) setInitialLoadDone(true); // trigger scroll listener only after page 1 is fully loaded
+      if (isInitial) setInitialLoadDone(true);
     } catch (error) {
       console.error("Error fetching characters:", error);
     } finally {
       setIsLoading(false);
-      if (!isInitial) {
-        setTimeout(() => {
-          window.scrollBy({ top: 100, behavior: "smooth" });
-        }, 100);
-      }
     }
   }
 
@@ -95,19 +89,14 @@ export default function CharacterPage() {
             key={character.id}
             character={character}
             onFavorite={toggleFavorite}
-            isFavorited={favorite.some((fav) => fav.id === character.id)}
+            isFavorited={favorites.some((fav) => fav.id === character.id)}
           />
         ))}
       </div>
 
       {isLoading && <div className="h-40" />}
-
-      {isLoading && (
-        <p className="text-white mt-4">Loading more characters...</p>
-      )}
-      {!hasMore && (
-        <p className="text-gray-400 mt-4">No more characters to load.</p>
-      )}
+      {isLoading && <p className="text-white mt-4">Loading more characters...</p>}
+      {!hasMore && <p className="text-gray-400 mt-4">No more characters to load.</p>}
     </div>
   );
 }

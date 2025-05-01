@@ -198,12 +198,7 @@ export default function FusionPage() {
           >
             Fuse Selected Characters
           </button>
-          <button
-            onClick={resetComparison}
-            className="bg-gray-500 text-white px-6 py-2 rounded-lg shadow-lg hover:shadow-xl hover:bg-gray-600 transition-all duration-300 transform hover:scale-105"
-          >
-            Reset
-          </button>
+          
         </div>
 
         {isLoading && (

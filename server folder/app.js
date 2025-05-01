@@ -85,9 +85,7 @@ app.post("/login-google", async (req, res, next) => {
         username: payload.name,
       });
     }
-    
 
-    
     const access_token = signToken({
       id: user.id,
     });
@@ -144,7 +142,7 @@ app.get("/users/profile", authentication, async (req, res, next) => {
   }
 });
 
-app.delete("/users/:id", authentication,  async (req, res, next) => {
+app.delete("/users/:id", authentication, async (req, res, next) => {
   try {
     const { id } = req.params;
 
@@ -203,8 +201,8 @@ app.post("/fusion", async (req, res) => {
     // Buat prompt berdasarkan data karakter
     const prompt = `
       Create a high-quality 2D rendered anime-style image of 1 character of a fusion between these two characters:
-      1. ${character1.name} - ${character1.race}, ${character1.gender}, Affiliation: ${character1.affiliation}, KI: ${character1.ki}, Max KI: ${character1.maxKi}
-      2. ${character2.name} - ${character2.race}, ${character2.gender}, Affiliation: ${character2.affiliation}, KI: ${character2.ki}, Max KI: ${character2.maxKi}
+      1. ${character1.name} - ${character1.race}, ${character1.gender}, Affiliation: ${character1.affiliation}, KI: ${character1.ki}, Max KI: ${character1.maxKi}, Image: ${character1.image}
+      2. ${character2.name} - ${character2.race}, ${character2.gender}, Affiliation: ${character2.affiliation}, KI: ${character2.ki}, Max KI: ${character2.maxKi}, Image: ${character2.image}
       
       The resulting fusion should physically and stylistically incorporate key traits from both characters, such as their hairstyle, outfit elements, facial expressions, aura, and fighting stance. The fusion should also reflect their personalities—whether calm, aggressive, playful, or strategic. Make sure the fusion looks powerful and balanced, as if it could exist in the Dragon Ball universe. Use a dramatic anime art style with vibrant colors and energy effects.
     `;
@@ -229,7 +227,6 @@ app.post("/fusion", async (req, res) => {
     }
 
     res.json({ image: imageBase64 }); // Kirim base64 image ke frontend
-
   } catch (error) {
     console.error("Fusion generation failed:", error);
     res.status(500).json({ error: "Internal server error" });

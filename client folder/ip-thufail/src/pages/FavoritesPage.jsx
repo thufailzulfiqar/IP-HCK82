@@ -1,19 +1,14 @@
-import { useEffect, useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { removeFavorite } from "../store/slices/FavoriteSlices"
 import CharCard from "../components/CharCard";
 import Menu from "../components/Menu";
 
 export default function FavoritesPage() {
-  const [favorites, setFavorites] = useState([]);
-
-  useEffect(() => {
-    const stored = JSON.parse(localStorage.getItem("favorites")) || [];
-    setFavorites(stored);
-  }, []);
+  const favorites = useSelector((state) => state.favorites.items);
+  const dispatch = useDispatch();
 
   const toggleFavorite = (character) => {
-    const updated = favorites.filter((fav) => fav.id !== character.id);
-    setFavorites(updated);
-    localStorage.setItem("favorites", JSON.stringify(updated));
+    dispatch(removeFavorite(character));
   };
 
   return (
@@ -25,9 +20,7 @@ export default function FavoritesPage() {
         My Favorite Characters
       </h1>
       {favorites.length === 0 ? (
-        <p className="text-white text-center">
-          You have no favorite characters.
-        </p>
+        <p className="text-white text-center">You have no favorite characters.</p>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
           {favorites.map((character) => (

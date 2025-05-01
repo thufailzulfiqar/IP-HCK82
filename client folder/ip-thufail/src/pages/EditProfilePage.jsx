@@ -42,9 +42,13 @@ export default function EditProfilePage() {
         }
       );
       Swal.fire("Success", response.data.message, "success");
-      Navigate("/")
+      Navigate("/");
     } catch (error) {
-      Swal.fire("Error", error.response?.data?.message || "Failed to update profile.", "error");
+      Swal.fire(
+        "Error",
+        error.response?.data?.message || "Failed to update profile.",
+        "error"
+      );
     }
   }
 
@@ -57,16 +61,16 @@ export default function EditProfilePage() {
         showCancelButton: true,
         confirmButtonText: "Yes, delete it!",
       });
-  
+
       if (result.isConfirmed) {
         await api.delete(`/users/${user.id}`, {
           headers: {
             Authorization: `Bearer ${access_token}`,
           },
         });
-  
+
         Swal.fire("Deleted!", "Your account has been deleted.", "success");
-  
+
         // Tambahkan penundaan sebelum pindah ke halaman login
         setTimeout(() => {
           localStorage.removeItem("access_token");
@@ -74,7 +78,11 @@ export default function EditProfilePage() {
         }, 1500); // Penundaan 1.5 detik
       }
     } catch (error) {
-      Swal.fire("Error", error.response?.data?.message || "Failed to delete account.", "error");
+      Swal.fire(
+        "Error",
+        error.response?.data?.message || "Failed to delete account.",
+        "error"
+      );
     }
   }
 
@@ -90,30 +98,42 @@ export default function EditProfilePage() {
         </h1>
         <form onSubmit={handleEdit} className="space-y-4">
           <div>
-            <label className="block text-white">Email</label>
+            <label htmlFor="email" className="block text-white">
+              Email
+            </label>
             <input
+              id="email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="w-full px-4 py-2 rounded bg-gray-800 text-white"
+              autoComplete="email" // Tambahkan autocomplete untuk email
             />
           </div>
           <div>
-            <label className="block text-white">Username</label>
+            <label htmlFor="username" className="block text-white">
+              Username
+            </label>
             <input
+              id="username"
               type="text"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               className="w-full px-4 py-2 rounded bg-gray-800 text-white"
+              autoComplete="username" // Tambahkan autocomplete untuk username
             />
           </div>
           <div>
-            <label className="block text-white">New Password</label>
+            <label htmlFor="password" className="block text-white">
+              New Password
+            </label>
             <input
+              id="password"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="w-full px-4 py-2 rounded bg-gray-800 text-white"
+              autoComplete="new-password" // Tambahkan autocomplete untuk password baru
             />
           </div>
           <div className="flex justify-between">

@@ -19,7 +19,7 @@ export default function Navbar({ children }) {
           </Link>
         </div>
         <div className="flex items-center gap-4">
-        <Link
+          <Link
             to="/about"
             className="text-sm text-base-content hover:underline"
           >
