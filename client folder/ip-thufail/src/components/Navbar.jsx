@@ -5,6 +5,7 @@ export default function Navbar({ children }) {
 
   async function handleLogout() {
     localStorage.removeItem("access_token");
+    window.google?.accounts.id.disableAutoSelect();
     navigate("/login");
   }
 
@@ -18,11 +19,23 @@ export default function Navbar({ children }) {
           </Link>
         </div>
         <div className="flex items-center gap-4">
+        <Link
+            to="/about"
+            className="text-sm text-base-content hover:underline"
+          >
+            ⓘ About
+          </Link>
           <Link
             to="/favorites"
             className="text-sm text-base-content hover:underline"
           >
             ❤︎ Favorites
+          </Link>
+          <Link
+            to="/edit-profile"
+            className="text-sm text-base-content hover:underline"
+          >
+            ✎ Edit Profile
           </Link>
           <button
             className="btn text-sm bg-red-500 hover:bg-red-600 text-white border-none justify-center"

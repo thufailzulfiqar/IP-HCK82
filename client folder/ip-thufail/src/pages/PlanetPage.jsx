@@ -1,35 +1,22 @@
 import { useEffect, useState } from "react";
 import { api } from "../components/UrlApi";
-import CharCard from "../components/CharCard";
 import Menu from "../components/Menu";
+import PlanetCard from "../components/PlanetCard";
 
-export default function CharacterPage() {
+export default function PlanetPage() {
   const access_token = localStorage.getItem("access_token");
-  const [characters, setCharacters] = useState([]);
+  const [planets, setPlanets] = useState([]);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [initialLoadDone, setInitialLoadDone] = useState(false);
-  const [favorite, setFavorite] = useState(
-    JSON.parse(localStorage.getItem("favorites")) || []
-  );
-
-  const toggleFavorite = (character) => {
-    const exists = favorite.find((fav) => fav.id === character.id);
-    const updated = exists
-      ? favorite.filter((fav) => fav.id !== character.id)
-      : [...favorite, character];
-
-    setFavorite(updated);
-    localStorage.setItem("favorites", JSON.stringify(updated));
-  };
 
   useEffect(() => {
     // Hanya fetch saat pertama kali mount (page 1)
     if (page === 1) {
-      fetchCharacters(page, true);
+      fetchPlanets(page, true);
     } else {
-      fetchCharacters(page);
+      fetchPlanets(page);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page]);
@@ -50,19 +37,19 @@ export default function CharacterPage() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [isLoading, hasMore, initialLoadDone]);
 
-  async function fetchCharacters(page, isInitial = false) {
+  async function fetchPlanets(page, isInitial = false) {
     setIsLoading(true);
     try {
-      const response = await api.get(`/characters?page=${page}&limit=5`, {
+      const response = await api.get(`/planets?page=${page}&limit=5`, {
         headers: {
           Authorization: `Bearer ${access_token}`,
         },
       });
 
-      const newCharacters = response.data.items;
-      setCharacters((prev) => {
+      const newPlanets = response.data.items;
+      setPlanets((prev) => {
         const existingIds = new Set(prev.map((c) => c.id));
-        const filteredNew = newCharacters.filter((c) => !existingIds.has(c.id));
+        const filteredNew = newPlanets.filter((c) => !existingIds.has(c.id));
         return [...prev, ...filteredNew];
       });
 
@@ -70,7 +57,7 @@ export default function CharacterPage() {
       setHasMore(meta.currentPage < meta.totalPages);
       if (isInitial) setInitialLoadDone(true); // trigger scroll listener only after page 1 is fully loaded
     } catch (error) {
-      console.error("Error fetching characters:", error);
+      console.error("Error fetching planets:", error);
     } finally {
       setIsLoading(false);
       if (!isInitial) {
@@ -87,26 +74,23 @@ export default function CharacterPage() {
         <Menu />
       </div>
       <h1 className="text-3xl font-bold text-white mb-6 text-center mb-12">
-        Characters
+        Planets
       </h1>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-        {characters.map((character) => (
-          <CharCard
-            key={character.id}
-            character={character}
-            onFavorite={toggleFavorite}
-            isFavorited={favorite.some((fav) => fav.id === character.id)}
-          />
+        {planets.map((planet) => (
+          <PlanetCard key={planet.id} planet={planet} />
         ))}
       </div>
 
-      {isLoading && <div className="h-40" />}
+      {isLoading && (
+        <div className="h-40" /> 
+      )}
 
       {isLoading && (
-        <p className="text-white mt-4">Loading more characters...</p>
+        <p className="text-white mt-4">Loading more planets...</p>
       )}
       {!hasMore && (
-        <p className="text-gray-400 mt-4">No more characters to load.</p>
+        <p className="text-gray-400 mt-4">No more planets to load.</p>
       )}
     </div>
   );

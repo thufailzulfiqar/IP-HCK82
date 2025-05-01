@@ -14,6 +14,15 @@ import RegisterPage from "./pages/RegisterPage";
 import AuthLayout from "./layouts/AuthLayouts";
 import HomePage from "./pages/HomePage";
 import CharacterPage from "./pages/CharacterPage";
+import CharByIdPage from "./pages/CharByIdPage";
+import PlanetPage from "./pages/PlanetPage";
+import PlanetByIdPage from "./pages/PlanetByIdPage";
+import TransformPage from "./pages/TransformPage";
+import ComparePage from "./pages/ComparePage";
+import FavoritesPage from "./pages/FavoritesPage";
+import FusionPage from "./pages/FusionPage";
+import EditProfilePage from "./pages/EditProfilePage";
+import AboutPage from "./pages/AboutPage";
 
 function App() {
   return (
@@ -24,7 +33,15 @@ function App() {
         <Route path="/" element={<AuthLayout />}>
           <Route index element={<HomePage />} />
           <Route path="/characters" element={<CharacterPage />} />
-          {/* <Route path="/update-my-coin/:id" element={<UpdateMyCoin />} /> */}
+          <Route path="/characters/:id" element={<CharByIdPage />} />
+          <Route path="/planets" element={<PlanetPage />} />
+          <Route path="/planets/:id" element={<PlanetByIdPage />} />
+          <Route path="/transformations" element={<TransformPage />} />
+          <Route path="/compare" element={<ComparePage />} />
+          <Route path="/favorites" element={<FavoritesPage />} />
+          <Route path="/fusion" element={<FusionPage/>} />
+          <Route path="/edit-profile" element={<EditProfilePage />} />
+          <Route path="/about" element={<AboutPage />} />
         </Route>
       </Routes>
     </BrowserRouter>

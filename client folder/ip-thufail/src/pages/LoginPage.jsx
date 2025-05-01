@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link, Navigate, useNavigate } from "react-router";
 import { api } from "../components/UrlApi";
 import Swal from "sweetalert2";
@@ -34,9 +34,54 @@ export default function LoginPage(props) {
       });
     }
   };
+  const initialized = useRef(false)
+
+  const handleCredentialResponse = async (response) => {;
+    try {
+      const { data } = await api.post("/login-google", {
+        googleToken: response.credential,
+      });
+
+      localStorage.setItem("access_token", data.access_token);
+
+      Swal.fire({
+        icon: "success",
+        title: "Success",
+        text: "Successfully Login!",
+        timer: 1500,
+        showConfirmButton: false,
+      });
+       navigate("/")
+    } catch (error) {
+      console.error("Login failed:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Login Failed",
+        text: error?.response?.data?.message || "An error occurred",
+      });
+    }
+  };
+
+  useEffect(() => {
+    // console.log("Google Client ID:", import.meta.env.VITE_GOOGLE_CLIENT_ID);
+  if (initialized.current) return;
+  initialized.current = true;
+
+  if (window.google && window.google.accounts) {
+    window.google.accounts.id.initialize({
+      client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
+      callback: handleCredentialResponse,
+    });
+
+    window.google.accounts.id.renderButton(
+      document.getElementById("buttonDiv"),
+      { theme: "outline", size: "large" }
+    );
+  }
+}, []);
 
   return (
-    <div className="min-h-screen flex flex-col justify-center items-center px-6 py-12 bg-[url('background.jpg')] bg-cover bg-center bg-no-repeat">
+    <div className="min-h-screen flex flex-col justify-center items-center px-6 py-12 bg-[url('/background.jpg')] bg-cover bg-center bg-no-repeat">
       <div className="sm:mx-auto sm:w-full sm:max-w-sm">
         <img
           alt="Your Company"
@@ -100,13 +145,17 @@ export default function LoginPage(props) {
           </div>
         </form>
 
-        <p className="mt-10 text-center text-sm/6 text-white">
+        <p className="mt-10 text-center text-sm/6 text-white mb-4">
           Not a member yet?{" "}
-          <Link to="/register" className="font-semibold text-yellow-400 hover:text-yellow-500">
+          <Link
+            to="/register"
+            className="font-semibold text-yellow-400 hover:text-yellow-500"
+          >
             Register
-            </Link>
+          </Link>
         </p>
       </div>
+      <div id="buttonDiv"></div>
     </div>
   );
 }

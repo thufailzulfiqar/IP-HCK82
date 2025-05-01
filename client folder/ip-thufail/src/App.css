@@ -1,2 +1,7 @@
 @import "tailwindcss";
 @plugin "daisyui";
+
+.image-hover:hover {
+    transform: scale(1.25); /* Membesarkan gambar saat hover */
+    transition: transform 0.5s ease-in-out;
+}

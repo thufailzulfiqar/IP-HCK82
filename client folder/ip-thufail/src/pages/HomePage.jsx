@@ -3,7 +3,7 @@ import Menu from "../components/Menu";
 export default function HomePage() {
   return (
     <div
-      className="min-h-screen flex flex-col px-0 py-12 bg-[url('background.jpg')] bg-no-repeat bg-cover bg-center 
+      className="min-h-screen flex flex-col px-0 py-12 bg-[url('/background.jpg')] bg-no-repeat bg-cover bg-center 
   bg-fixed"
     >
       <Menu />

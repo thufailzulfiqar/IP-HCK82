@@ -36,7 +36,7 @@ export default function RegisterPage() {
     }
   }
   return (
-    <div className="min-h-screen flex flex-col justify-center items-center px-6 py-12 bg-[url('background.jpg')] bg-cover bg-center bg-no-repeat">
+    <div className="min-h-screen flex flex-col justify-center items-center px-6 py-12 bg-[url('/background.jpg')] bg-cover bg-center bg-no-repeat">
       <div className="sm:mx-auto sm:w-full sm:max-w-sm">
         <img
           alt="Your Company"
