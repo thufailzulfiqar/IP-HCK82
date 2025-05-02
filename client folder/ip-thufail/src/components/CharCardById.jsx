@@ -88,7 +88,7 @@
                 className="object-contain w-full h-60 mx-auto image-hover"
                 />
                 <h4 className="text-lg font-bold mt-2">{t.name}</h4>
-                <p className="text-yellow-300">{t.ki}</p>
+                <p className="text-yellow-300">Ki: {t.ki}</p>
             </div>
             ))}
         </div>
