@@ -57,17 +57,24 @@ export default function CharacterPage() {
           Authorization: `Bearer ${access_token}`,
         },
       });
-
+  
       const newCharacters = response.data.items;
       setCharacters((prev) => {
         const existingIds = new Set(prev.map((c) => c.id));
         const filteredNew = newCharacters.filter((c) => !existingIds.has(c.id));
         return [...prev, ...filteredNew];
       });
-
+  
       const meta = response.data.meta;
       setHasMore(meta.currentPage < meta.totalPages);
-      if (isInitial) setInitialLoadDone(true);
+      if (isInitial) {
+        setInitialLoadDone(true);
+      } else {
+        // Scroll ke bawah setelah data baru dimuat
+        setTimeout(() => {
+          window.scrollBy({ top: 500, behavior: "smooth" });
+        }, 100);
+      }
     } catch (error) {
       console.error("Error fetching characters:", error);
     } finally {
