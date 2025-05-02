@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1746168846158" clover="3.2.0">
-  <project timestamp="1746168846158" name="All files">
-    <metrics statements="238" coveredstatements="228" conditionals="77" coveredconditionals="66" methods="26" coveredmethods="24" elements="341" coveredelements="318" complexity="0" loc="238" ncloc="238" packages="4" files="8" classes="8"/>
+<coverage generated="1746169948861" clover="3.2.0">
+  <project timestamp="1746169948861" name="All files">
+    <metrics statements="238" coveredstatements="228" conditionals="77" coveredconditionals="65" methods="26" coveredmethods="24" elements="341" coveredelements="317" complexity="0" loc="238" ncloc="238" packages="4" files="8" classes="8"/>
     <package name="server folder">
-      <metrics statements="159" coveredstatements="152" conditionals="43" coveredconditionals="36" methods="13" coveredmethods="12"/>
+      <metrics statements="159" coveredstatements="152" conditionals="43" coveredconditionals="35" methods="13" coveredmethods="12"/>
       <file name="app.js" path="C:\Users\Thufail\Documents\Hacktiv8\p2\IP\IP-HCK82\server folder\app.js">
-        <metrics statements="159" coveredstatements="152" conditionals="43" coveredconditionals="36" methods="13" coveredmethods="12"/>
+        <metrics statements="159" coveredstatements="152" conditionals="43" coveredconditionals="35" methods="13" coveredmethods="12"/>
         <line num="1" count="3" type="cond" truecount="1" falsecount="1"/>
         <line num="2" count="3" type="stmt"/>
         <line num="4" count="3" type="stmt"/>
@@ -107,13 +107,13 @@
         <line num="202" count="2" type="stmt"/>
         <line num="206" count="5" type="stmt"/>
         <line num="214" count="5" type="stmt"/>
-        <line num="222" count="3" type="stmt"/>
-        <line num="223" count="3" type="stmt"/>
-        <line num="224" count="3" type="cond" truecount="2" falsecount="0"/>
-        <line num="225" count="2" type="stmt"/>
-        <line num="229" count="3" type="cond" truecount="2" falsecount="0"/>
+        <line num="222" count="2" type="stmt"/>
+        <line num="223" count="2" type="stmt"/>
+        <line num="224" count="1" type="cond" truecount="1" falsecount="1"/>
+        <line num="225" count="1" type="stmt"/>
+        <line num="229" count="2" type="cond" truecount="2" falsecount="0"/>
         <line num="230" count="1" type="stmt"/>
-        <line num="233" count="2" type="stmt"/>
+        <line num="233" count="1" type="stmt"/>
         <line num="235" count="2" type="stmt"/>
         <line num="236" count="2" type="stmt"/>
         <line num="240" count="3" type="stmt"/>
