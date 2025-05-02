@@ -3,7 +3,7 @@
 
 ## Base URL
 ```
-http://localhost:PORT
+https://ip.fiqar.space
 ```
 
 ## Authentication
