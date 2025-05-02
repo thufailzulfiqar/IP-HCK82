@@ -164,6 +164,10 @@ app.patch("/users/edit", authentication, async (req, res, next) => {
   try {
     const { email, username, password } = req.body;
 
+    if (!email && !username && !password) {
+      throw { name: "BadRequest", message: "At least one field is required" };
+    }
+
     const user = await User.findByPk(req.user.id);
 
     if (!user) {
@@ -233,7 +237,7 @@ app.post("/fusion", async (req, res) => {
   }
 });
 
-app.get("/characters", async (req, res) => {
+app.get("/characters", authentication, async (req, res) => {
   try {
     const { page, limit } = req.query;
     const response = await axios.get(
@@ -254,7 +258,7 @@ app.get("/characters", async (req, res) => {
   }
 });
 
-app.get("/characters/:id", async (req, res) => {
+app.get("/characters/:id", authentication, async (req, res) => {
   const { id } = req.params; // ambil id dari URL
   try {
     const response = await axios.get(
@@ -272,7 +276,7 @@ app.get("/characters/:id", async (req, res) => {
   }
 });
 
-app.get("/planets", async (req, res) => {
+app.get("/planets", authentication, async (req, res) => {
   try {
     const { page, limit } = req.query;
     const response = await axios.get("https://dragonball-api.com/api/planets", {
@@ -290,7 +294,7 @@ app.get("/planets", async (req, res) => {
   }
 });
 
-app.get("/planets/:id", async (req, res) => {
+app.get("/planets/:id", authentication, async (req, res) => {
   const { id } = req.params; // ambil id dari URL
   try {
     const response = await axios.get(
@@ -308,7 +312,7 @@ app.get("/planets/:id", async (req, res) => {
   }
 });
 
-app.get("/transformations", async (req, res) => {
+app.get("/transformations", authentication, async (req, res) => {
   try {
     const response = await axios.get(
       "https://dragonball-api.com/api/transformations"
@@ -322,7 +326,7 @@ app.get("/transformations", async (req, res) => {
   }
 });
 
-app.get("/transformations/:id", async (req, res) => {
+app.get("/transformations/:id", authentication, async (req, res) => {
   const { id } = req.params; // ambil id dari URL
   try {
     const response = await axios.get(

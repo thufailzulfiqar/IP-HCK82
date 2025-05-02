@@ -13,6 +13,9 @@ export default function FusionPage() {
   const [fusionResult, setFusionResult] = useState(null);
 
   const handleFusion = async () => {
+    
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  
     const result = await generateFusionImage(selectedCharacters, setIsLoading);
     if (result) {
       setFusionResult(result);
@@ -94,7 +97,7 @@ export default function FusionPage() {
       }
     }, 100);
   }
-  
+
   async function generateFusionImage(selectedCharacters, setIsLoading) {
     if (!selectedCharacters || selectedCharacters.length !== 2) {
       Swal.fire(
@@ -104,21 +107,21 @@ export default function FusionPage() {
       );
       return null;
     }
-  
+
     try {
       setIsLoading(true); // Optional loading state
       const response = await api.post("/fusion", {
         character1: selectedCharacters[0],
         character2: selectedCharacters[1],
       });
-  
+
       const fusionImage = response.data.image; // base64 image
-  
+
       if (!fusionImage) {
         Swal.fire("Error", "No image data received from server.", "error");
         return null;
       }
-  
+
       // Tampilkan hasil fusion dengan gambar lebih besar di SweetAlert2
       await Swal.fire({
         title: "Fusion Generated!",
@@ -145,23 +148,23 @@ export default function FusionPage() {
             link.click();
             document.body.removeChild(link);
           });
-  
+
           // Event listener untuk tombol awesome
           const awesomeBtn = document.getElementById("awesome-btn");
           awesomeBtn.addEventListener("click", () => {
             // Reset data selected characters
             setSelectedCharacters([]);
             setComparisonData([]);
-  
+
             // Scroll ke atas
             window.scrollTo({ top: 0, behavior: "smooth" });
-  
+
             // Tutup SweetAlert2
             Swal.close();
           });
         },
       });
-  
+
       return fusionImage; // bisa digunakan untuk keperluan lain (download, simpan, dsb)
     } catch (error) {
       console.error("Fusion generation error:", error);
@@ -198,11 +201,18 @@ export default function FusionPage() {
           >
             Fuse Selected Characters
           </button>
-          
+          <button
+            onClick={resetComparison}
+            className="bg-gradient-to-r from-gray-500 to-gray-600 text-white px-6 py-2 rounded-lg shadow-lg hover:shadow-xl hover:from-gray-600 hover:to-gray-700 transition-all duration-300 transform hover:scale-105"
+          >
+            Reset
+          </button>
         </div>
 
         {isLoading && (
-          <p className="text-white text-center mt-4">Loading characters...</p>
+          <div className="text-center mt-4">
+            <img src="/fusion.gif" alt="Loading..." className="mx-auto h-150" />
+          </div>
         )}
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">

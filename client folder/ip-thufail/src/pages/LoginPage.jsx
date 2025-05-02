@@ -3,6 +3,7 @@ import { Link, Navigate, useNavigate } from "react-router";
 import { api } from "../components/UrlApi";
 import Swal from "sweetalert2";
 
+
 export default function LoginPage(props) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

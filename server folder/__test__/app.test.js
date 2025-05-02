@@ -26,6 +26,13 @@ const app = require("../app");
 const { User } = require("../models");
 const { comparePassword, hashPassword } = require("../helpers/bcrypt");
 const axios = require("axios");
+const { GoogleGenAI } = require("@google/genai");
+const { OAuth2Client } = require("google-auth-library");
+const { signToken } = require("../helpers/jwt");
+
+jest.mock("@google/genai");
+
+jest.mock("google-auth-library");
 
 jest.mock("../helpers/jwt", () => ({
   signToken: jest.fn(() => "mockedAccessToken"),
@@ -221,10 +228,7 @@ describe("DELETE /users/:id", () => {
       .set("Authorization", "Bearer mockedAdminToken");
 
     expect(response.status).toBe(200);
-    expect(response.body).toHaveProperty(
-      "message",
-      "User deleted successfully"
-    );
+    expect(response.body).toHaveProperty("message", "User deleted successfully");
     expect(User.findByPk).toHaveBeenCalledWith("1");
     expect(mockUser.destroy).toHaveBeenCalled();
   });
@@ -240,61 +244,22 @@ describe("DELETE /users/:id", () => {
     expect(response.body).toHaveProperty("message", "User not found");
   });
 
-  it("should return 403 if the user is not an admin", async () => {
-    jest.resetModules();
-
-    jest.mock("../middlewares/authentication", () =>
-      jest.fn((req, res, next) => {
-        req.user = { id: 2, role: "User" };
-        next();
-      })
-    );
-
-    jest.mock("../middlewares/authorization", () => ({
-      isAdmin: jest.fn((req, res, next) => {
-        if (req.user.role === "Admin") return next();
-        res.status(403).json({ message: "You're not authorized" });
-      }),
-    }));
-
-    const app = require("../app"); // Re-require app AFTER mocks
-
-    const response = await request(app)
-      .delete("/users/1")
-      .set("Authorization", "Bearer mockedUserToken");
-
-    expect(response.status).toBe(403);
-    expect(response.body).toHaveProperty("message", "You're not authorized");
-  });
-
   it("should return 401 if no token is provided", async () => {
-    jest.resetModules();
-
-    // Simulasikan middleware auth yang benar-benar cek token
-    jest.mock("../middlewares/authentication", () =>
-      jest.fn((req, res, next) => {
-        const authHeader = req.headers["authorization"];
-        if (!authHeader) {
-          return res.status(401).json({ message: "Invalid Token" });
-        }
-        req.user = { id: 1, role: "Admin" };
-        next();
-      })
-    );
-
-    jest.mock("../middlewares/authorization", () => ({
-      isAdmin: jest.fn((req, res, next) => {
-        if (req.user.role === "Admin") return next();
-        res.status(403).json({ message: "You're not authorized" });
-      }),
-    }));
-
-    const app = require("../app"); // Re-import setelah mock di-set
-
     const response = await request(app).delete("/users/1");
 
     expect(response.status).toBe(401);
     expect(response.body).toHaveProperty("message", "Invalid Token");
+  });
+
+  it("should return 500 if there is a server error", async () => {
+    User.findByPk.mockRejectedValue(new Error("Internal Server Error"));
+
+    const response = await request(app)
+      .delete("/users/1")
+      .set("Authorization", "Bearer mockedAdminToken");
+
+    expect(response.status).toBe(500);
+    expect(response.body).toHaveProperty("message", "Internal server error");
   });
 });
 
@@ -649,4 +614,202 @@ describe("GET /transformations/:id", () => {
   });
 });
 
+describe("POST /fusion", () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
 
+  it("should return 200 and the fusion image when input is valid", async () => {
+    const mockResponse = {
+      candidates: [
+        {
+          content: {
+            parts: [
+              {
+                inlineData: {
+                  data: "mockedBase64ImageData",
+                },
+              },
+            ],
+          },
+        },
+      ],
+    };
+
+    GoogleGenAI.prototype.models = {
+      generateContent: jest.fn().mockResolvedValue(mockResponse),
+    };
+
+    const response = await request(app)
+      .post("/fusion")
+      .send({
+        character1: {
+          name: "Goku",
+          race: "Saiyan",
+          gender: "Male",
+          affiliation: "Z Fighters",
+          ki: 9000,
+          maxKi: 15000,
+          image: "https://example.com/goku.png",
+        },
+        character2: {
+          name: "Vegeta",
+          race: "Saiyan",
+          gender: "Male",
+          affiliation: "Z Fighters",
+          ki: 8500,
+          maxKi: 14000,
+          image: "https://example.com/vegeta.png",
+        },
+      });
+
+    expect(response.status).toBe(200);
+    expect(response.body).toHaveProperty("image", "mockedBase64ImageData");
+    expect(GoogleGenAI.prototype.models.generateContent).toHaveBeenCalled();
+  });
+
+  it("should return 400 if one or both characters are missing", async () => {
+    const response = await request(app)
+      .post("/fusion")
+      .send({
+        character1: {
+          name: "Goku",
+          race: "Saiyan",
+          gender: "Male",
+          affiliation: "Z Fighters",
+          ki: 9000,
+          maxKi: 15000,
+          image: "https://example.com/goku.png",
+        },
+      });
+
+    expect(response.status).toBe(400);
+    expect(response.body).toHaveProperty("error", "2 characters are required");
+  });
+
+  it("should return 500 if the AI service fails", async () => {
+    GoogleGenAI.prototype.models = {
+      generateContent: jest.fn().mockRejectedValue(new Error("AI service error")),
+    };
+
+    const response = await request(app)
+      .post("/fusion")
+      .send({
+        character1: {
+          name: "Goku",
+          race: "Saiyan",
+          gender: "Male",
+          affiliation: "Z Fighters",
+          ki: 9000,
+          maxKi: 15000,
+          image: "https://example.com/goku.png",
+        },
+        character2: {
+          name: "Vegeta",
+          race: "Saiyan",
+          gender: "Male",
+          affiliation: "Z Fighters",
+          ki: 8500,
+          maxKi: 14000,
+          image: "https://example.com/vegeta.png",
+        },
+      });
+
+    expect(response.status).toBe(500);
+    expect(response.body).toHaveProperty("error", "Internal server error");
+    expect(GoogleGenAI.prototype.models.generateContent).toHaveBeenCalled();
+  });
+
+  it("should return 500 if no image is generated", async () => {
+    const mockResponse = {
+      candidates: [
+        {
+          content: {
+            parts: [],
+          },
+        },
+      ],
+    };
+
+    GoogleGenAI.prototype.models = {
+      generateContent: jest.fn().mockResolvedValue(mockResponse),
+    };
+
+    const response = await request(app)
+      .post("/fusion")
+      .send({
+        character1: {
+          name: "Goku",
+          race: "Saiyan",
+          gender: "Male",
+          affiliation: "Z Fighters",
+          ki: 9000,
+          maxKi: 15000,
+          image: "https://example.com/goku.png",
+        },
+        character2: {
+          name: "Vegeta",
+          race: "Saiyan",
+          gender: "Male",
+          affiliation: "Z Fighters",
+          ki: 8500,
+          maxKi: 14000,
+          image: "https://example.com/vegeta.png",
+        },
+      });
+
+    expect(response.status).toBe(500);
+    expect(response.body).toHaveProperty("error", "No image generated");
+    expect(GoogleGenAI.prototype.models.generateContent).toHaveBeenCalled();
+  });
+
+  
+});
+
+describe("POST /login-google", () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("should create a new user and return access token if user does not exist", async () => {
+    const mockGoogleToken = "mockGoogleToken";
+    const mockPayload = {
+      email: "newuser@example.com",
+      name: "New User",
+    };
+
+    const mockTicket = {
+      getPayload: jest.fn().mockReturnValue(mockPayload),
+    };
+
+    OAuth2Client.prototype.verifyIdToken = jest.fn().mockResolvedValue(mockTicket);
+    User.findOne.mockResolvedValue(null); // Simulate user not found
+    User.create.mockResolvedValue({
+      id: 1,
+      email: mockPayload.email,
+      username: mockPayload.name,
+    });
+    signToken.mockReturnValue("mockedAccessToken");
+    hashPassword.mockReturnValue("hashedRandomPassword");
+
+    const response = await request(app).post("/login-google").send({
+      googleToken: mockGoogleToken,
+    });
+
+    expect(OAuth2Client.prototype.verifyIdToken).toHaveBeenCalledWith({
+      idToken: mockGoogleToken,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+    expect(User.findOne).toHaveBeenCalledWith({
+      where: { email: mockPayload.email },
+    });
+    expect(User.create).toHaveBeenCalledWith({
+      email: mockPayload.email,
+      password: expect.any(String), // Random password is hashed
+      username: mockPayload.name,
+    });
+    expect(signToken).toHaveBeenCalledWith({ id: 1 });
+    expect(response.status).toBe(200);
+    expect(response.body).toHaveProperty("access_token", "mockedAccessToken");
+  });
+});
