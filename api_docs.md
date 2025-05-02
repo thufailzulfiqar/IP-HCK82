@@ -1,6 +1,11 @@
 
 # Dragon Ball Fusion API Documentation
 
+## URL Deployment
+```
+https://ip-amazingdragonball.web.app/
+```
+
 ## Base URL
 ```
 https://ip.fiqar.space
